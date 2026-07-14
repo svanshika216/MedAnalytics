@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+{% block title %}Add Doctor - MedAnalytics{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h2 class="fw-bold mb-1">Add Doctor</h2>
+    <p class="text-muted">Register a new doctor and set their availability</p>
+</div>
+
+<form method="POST">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="row g-4">
+        <!-- Doctor Details -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-3">Doctor Details</h5>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Full Name</label>
+                        <input type="text" name="name" class="form-control" placeholder="e.g. Priya Sharma" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Specialization</label>
+                        <input type="text" name="specialization" class="form-control" placeholder="e.g. Cardiologist" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Contact Number</label>
+                        <input type="text" name="contact" class="form-control" placeholder="e.g. 9876543210" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Consultation Fee (₹)</label>
+                        <input type="number" name="consultation_fee" class="form-control"
+                                min="0" step="0.01" placeholder="e.g. 500.00"
+                                value="{{ doctor.consultation_fee if doctor is defined else '500.00' }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Department</label>
+                        <select name="department_id" class="form-select" required>
+                            <option value="">Select Department</option>
+                            {% for dept in departments %}
+                            <option value="{{ dept.id }}">{{ dept.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Availability -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold mb-0">Availability Slots</h5>
+                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="addSlot()">
+                            <i class="bi bi-plus"></i> Add Slot
+                        </button>
+                    </div>
+                    <div id="availability-slots">
+                        <div class="availability-slot border rounded p-3 mb-2">
+                            <div class="row g-2">
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-semibold">Day</label>
+                                    <select name="day_of_week" class="form-select form-select-sm">
+                                        <option value="">Select</option>
+                                        <option>Monday</option>
+                                        <option>Tuesday</option>
+                                        <option>Wednesday</option>
+                                        <option>Thursday</option>
+                                        <option>Friday</option>
+                                        <option>Saturday</option>
+                                        <option>Sunday</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-semibold">Start</label>
+                                    <input type="time" name="start_time" class="form-control form-control-sm">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-semibold">End</label>
+                                    <input type="time" name="end_time" class="form-control form-control-sm">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex gap-2 mt-4">
+        <button type="submit" class="btn btn-primary px-4">
+            <i class="bi bi-check-circle me-2"></i>Add Doctor
+        </button>
+        <a href="{{ url_for('admin.doctors') }}" class="btn btn-outline-secondary">Cancel</a>
+    </div>
+</form>
+
+{% block extra_js %}
+<script>
+function addSlot() {
+    const container = document.getElementById('availability-slots');
+    const slot = document.createElement('div');
+    slot.className = 'availability-slot border rounded p-3 mb-2';
+    slot.innerHTML = `
+        <div class="row g-2">
+            <div class="col-md-4">
+                <label class="form-label small fw-semibold">Day</label>
+                <select name="day_of_week" class="form-select form-select-sm">
+                    <option value="">Select</option>
+                    <option>Monday</option>
+                    <option>Tuesday</option>
+                    <option>Wednesday</option>
+                    <option>Thursday</option>
+                    <option>Friday</option>
+                    <option>Saturday</option>
+                    <option>Sunday</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label small fw-semibold">Start</label>
+                <input type="time" name="start_time" class="form-control form-control-sm">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label small fw-semibold">End</label>
+                <input type="time" name="end_time" class="form-control form-control-sm">
+            </div>
+        </div>
+        <button type="button" class="btn btn-sm btn-link text-danger mt-1 p-0"
+                onclick="this.parentElement.remove()">
+            <i class="bi bi-trash"></i> Remove
+        </button>`;
+    container.appendChild(slot);
+}
+</script>
+{% endblock %}
+{% endblock %}

@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% block title %}Appointments - MedAnalytics{% endblock %}
+{% block page_title %}Appointments{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h2>Appointments</h2>
+        <p>{{ appointments | length }} total appointment(s)</p>
+    </div>
+    {% if current_user.role in ['admin', 'receptionist'] %}
+    <a href="{{ url_for('appointments.add_appointment') }}" class="btn btn-primary">
+        <i class="bi bi-calendar-plus me-2"></i>Book Appointment
+    </a>
+    {% endif %}
+</div>
+
+<div class="table-card">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Patient</th>
+                <th>Doctor</th>
+                <th>Department</th>
+                <th>Scheduled</th>
+                <th>Priority</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for appt in appointments %}
+            <tr>
+                <td class="text-muted">{{ loop.index }}</td>
+                <td class="fw-semibold">{{ appt.patient.name }}</td>
+                <td>Dr. {{ appt.doctor.name }}</td>
+                <td>
+                    <span class="badge bg-light text-dark border">
+                        {{ appt.doctor.department.name }}
+                    </span>
+                </td>
+                <td class="small">
+                    {{ appt.scheduled_time.strftime('%d %b %Y') }}<br>
+                    <span class="text-muted">
+                        {{ appt.scheduled_time.strftime('%I:%M %p') }}
+                    </span>
+                </td>
+                <td>
+                    {% if appt.priority == 'emergency' %}
+                        <span class="badge bg-danger">Emergency</span>
+                    {% elif appt.priority == 'urgent' %}
+                        <span class="badge bg-warning text-dark">Urgent</span>
+                    {% else %}
+                        <span class="badge bg-light text-dark border">Normal</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if appt.status == 'completed' %}
+                        <span class="badge bg-success">Completed</span>
+                    {% elif appt.status == 'scheduled' %}
+                        <span class="badge bg-primary">Scheduled</span>
+                    {% else %}
+                        <span class="badge bg-secondary">Cancelled</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{{ url_for('appointments.view_appointment',
+                                       appointment_id=appt.id) }}"
+                       class="btn btn-sm btn-outline-info">
+                        <i class="bi bi-eye"></i>
+                    </a>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="8">
+                    <div class="empty-state">
+                        <i class="bi bi-calendar3"></i>
+                        No appointments found.
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

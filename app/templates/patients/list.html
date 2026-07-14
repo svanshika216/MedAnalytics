@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% block title %}Patients - MedAnalytics{% endblock %}
+{% block page_title %}Patients{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h2>Patients</h2>
+        <p>{{ patients | length }} patient(s) registered</p>
+    </div>
+    {% if current_user.role in ['admin', 'receptionist'] %}
+    <a href="{{ url_for('patients.add_patient') }}" class="btn btn-primary">
+        <i class="bi bi-person-plus me-2"></i>Register Patient
+    </a>
+    {% endif %}
+</div>
+
+<div class="search-bar">
+    <form method="GET" class="d-flex gap-2">
+        <input type="text" name="search" class="form-control"
+               placeholder="Search by name or contact..."
+               value="{{ search }}">
+        <button type="submit" class="btn btn-primary px-4">
+            <i class="bi bi-search"></i>
+        </button>
+        {% if search %}
+        <a href="{{ url_for('patients.list_patients') }}"
+           class="btn btn-outline-secondary">Clear</a>
+        {% endif %}
+    </form>
+</div>
+
+<div class="table-card">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Gender</th>
+                <th>Blood Group</th>
+                <th>Contact</th>
+                <th>Visits</th>
+                <th>Registered</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for patient in patients %}
+            <tr>
+                <td class="text-muted">{{ loop.index }}</td>
+                <td>
+                    <div class="fw-semibold">{{ patient.name }}</div>
+                </td>
+                <td>{{ patient.gender }}</td>
+                <td>
+                    {% if patient.blood_group %}
+                        <span class="badge bg-danger">{{ patient.blood_group }}</span>
+                    {% else %}
+                        <span class="text-muted">—</span>
+                    {% endif %}
+                </td>
+                <td>{{ patient.contact }}</td>
+                <td>
+                    <span class="badge bg-primary rounded-pill">
+                        {{ patient.appointments | length }}
+                    </span>
+                </td>
+                <td class="text-muted small">
+                    {{ patient.created_at.strftime('%d %b %Y') }}
+                </td>
+                <td>
+                    <div class="d-flex gap-1">
+                        <a href="{{ url_for('patients.view_patient', patient_id=patient.id) }}"
+                           class="btn btn-sm btn-outline-info">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                        {% if current_user.role in ['admin', 'receptionist'] %}
+                        <a href="{{ url_for('patients.edit_patient', patient_id=patient.id) }}"
+                           class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <form method="POST"
+                              action="{{ url_for('patients.delete_patient', patient_id=patient.id) }}"
+                              style="display:inline;"
+                              onsubmit="return confirm('Delete {{ patient.name }}?')">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="8">
+                    <div class="empty-state">
+                        <i class="bi bi-people"></i>
+                        No patients found.
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block title %}Login - MedAnalytics{% endblock %}
+
+{% block auth_content %}
+<div class="min-vh-100 d-flex align-items-center justify-content-center"
+     style="background: linear-gradient(135deg, #1a252f 0%, #2C3E50 50%, #3498DB 100%);">
+    <div style="width: 100%; max-width: 420px; padding: 20px;">
+        <div class="text-center mb-4">
+            <div style="width:64px; height:64px; background:rgba(255,255,255,0.15);
+                        border-radius:16px; display:inline-flex; align-items:center;
+                        justify-content:center; margin-bottom:16px;">
+                <i class="bi bi-hospital fs-2 text-white"></i>
+            </div>
+            <h3 class="text-white fw-bold mb-1">MedAnalytics</h3>
+            <p style="color:rgba(255,255,255,0.6); font-size:0.875rem;">
+                Hospital Operations System
+            </p>
+        </div>
+
+        <div class="card p-4" style="border-radius:16px;">
+            <h5 class="fw-bold mb-1" style="color:var(--primary)">Welcome back</h5>
+            <p class="text-muted small mb-4">Sign in to your account to continue</p>
+
+            <form method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="mb-3">
+                    <label class="form-label">Username</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0">
+                            <i class="bi bi-person text-muted"></i>
+                        </span>
+                        <input type="text" name="username" class="form-control border-start-0"
+                               placeholder="Enter your username" required
+                               style="border-left:none;">
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label">Password</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0">
+                            <i class="bi bi-lock text-muted"></i>
+                        </span>
+                        <input type="password" name="password" class="form-control border-start-0"
+                               placeholder="Enter your password" required
+                               style="border-left:none;">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 py-2">
+                    <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+                </button>
+            </form>
+        </div>
+
+        <p class="text-center mt-3" style="color:rgba(255,255,255,0.4); font-size:0.78rem;">
+            MedAnalytics v1.0 — Internal System
+        </p>
+    </div>
+</div>
+{% endblock %}

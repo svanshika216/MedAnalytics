@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% block title %}Users - MedAnalytics{% endblock %}
+{% block page_title %}User Management{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h2>User Management</h2>
+        <p>{{ users | length }} user(s) in the system</p>
+    </div>
+    <a href="{{ url_for('admin.add_user') }}" class="btn btn-primary">
+        <i class="bi bi-person-plus me-2"></i>Add User
+    </a>
+</div>
+
+<div class="table-card">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Username</th>
+                <th>Role</th>
+                <th>Linked Doctor</th>
+                <th>Created</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td class="text-muted">{{ loop.index }}</td>
+                <td class="fw-semibold">{{ user.username }}</td>
+                <td>
+                    {% if user.role == 'admin' %}
+                        <span class="badge bg-danger">Admin</span>
+                    {% elif user.role == 'doctor' %}
+                        <span class="badge bg-primary">Doctor</span>
+                    {% else %}
+                        <span class="badge bg-secondary">Receptionist</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if user.doctor %}
+                        Dr. {{ user.doctor.name }}
+                    {% else %}
+                        <span class="text-muted">—</span>
+                    {% endif %}
+                </td>
+                <td class="text-muted small">
+                    {{ user.created_at.strftime('%d %b %Y') }}
+                </td>
+                <td>
+                    <div class="d-flex gap-1">
+                        <button type="button" class="btn btn-sm btn-outline-warning"
+                                data-bs-toggle="modal"
+                                data-bs-target="#resetModal{{ user.id }}">
+                            <i class="bi bi-key"></i>
+                        </button>
+                        <div class="modal fade" id="resetModal{{ user.id }}" tabindex="-1">
+                            <div class="modal-dialog modal-sm">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h6 class="modal-title fw-bold">
+                                            Reset — {{ user.username }}
+                                        </h6>
+                                        <button type="button" class="btn-close"
+                                                data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <form method="POST"
+                                          action="{{ url_for('admin.reset_password', user_id=user.id) }}">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <div class="modal-body">
+                                            <input type="password" name="new_password"
+                                                   class="form-control"
+                                                   placeholder="New password" required>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="submit" class="btn btn-warning btn-sm">
+                                                Reset
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        {% if user.username != 'admin' %}
+                        <form method="POST"
+                              action="{{ url_for('admin.delete_user', user_id=user.id) }}"
+                              style="display:inline;"
+                              onsubmit="return confirm('Delete {{ user.username }}?')">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="6">
+                    <div class="empty-state">
+                        <i class="bi bi-people"></i>
+                        No users found.
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

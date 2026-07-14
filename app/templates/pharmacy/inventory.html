@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% block title %}Pharmacy Inventory - MedAnalytics{% endblock %}
+{% block page_title %}Pharmacy{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h2>Pharmacy Inventory</h2>
+        <p>{{ medicines | length }} medicines
+            {% if low_stock_count > 0 %}
+            — <span class="text-danger fw-semibold">{{ low_stock_count }} low stock alert(s)</span>
+            {% endif %}
+        </p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{{ url_for('pharmacy.billing_list') }}" class="btn btn-outline-primary">
+            <i class="bi bi-receipt me-2"></i>Billing
+        </a>
+        {% if current_user.role == 'admin' %}
+        <a href="{{ url_for('pharmacy.add_medicine') }}" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-2"></i>Add Medicine
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="table-card">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Medicine</th>
+                <th>Stock</th>
+                <th>Reorder At</th>
+                <th>Unit Price</th>
+                <th>Status</th>
+                {% if current_user.role == 'admin' %}<th>Actions</th>{% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for medicine in medicines %}
+            <tr>
+                <td class="text-muted">{{ loop.index }}</td>
+                <td class="fw-semibold">{{ medicine.medicine_name }}</td>
+                <td>
+                    <span class="fw-semibold {% if medicine.quantity <= medicine.reorder_threshold %}text-danger{% endif %}">
+                        {{ medicine.quantity }}
+                    </span>
+                </td>
+                <td class="text-muted">{{ medicine.reorder_threshold }}</td>
+                <td>₹{{ medicine.unit_price }}</td>
+                <td>
+                    {% if medicine.quantity == 0 %}
+                        <span class="badge bg-danger">Out of Stock</span>
+                    {% elif medicine.quantity <= medicine.reorder_threshold %}
+                        <span class="badge bg-warning text-dark">Low Stock</span>
+                    {% else %}
+                        <span class="badge bg-success">In Stock</span>
+                    {% endif %}
+                </td>
+                {% if current_user.role == 'admin' %}
+                <td>
+                    <div class="d-flex gap-1">
+                        <a href="{{ url_for('pharmacy.edit_medicine', medicine_id=medicine.id) }}"
+                           class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <form method="POST"
+                              action="{{ url_for('pharmacy.delete_medicine', medicine_id=medicine.id) }}"
+                              style="display:inline;"
+                              onsubmit="return confirm('Remove {{ medicine.medicine_name }}?')">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                </td>
+                {% endif %}
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="7">
+                    <div class="empty-state">
+                        <i class="bi bi-capsule"></i>
+                        No medicines in inventory.
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

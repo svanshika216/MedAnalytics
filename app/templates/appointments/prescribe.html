@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% block title %}Add Prescription - MedAnalytics{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h2 class="fw-bold mb-1">Add Prescription</h2>
+    <p class="text-muted">
+        For {{ appointment.patient.name }} —
+        {{ appointment.scheduled_time.strftime('%d %b %Y') }}
+    </p>
+</div>
+
+<form method="POST">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="card">
+        <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold mb-0">Medicines</h5>
+                <button type="button" class="btn btn-sm btn-outline-primary"
+                        onclick="addMedicine()">
+                    <i class="bi bi-plus"></i> Add Medicine
+                </button>
+            </div>
+
+            <div id="medicine-list">
+                <div class="medicine-row border rounded p-3 mb-2">
+                    <div class="row g-2">
+                        <div class="col-md-3">
+                            <label class="form-label small fw-semibold">Medicine</label>
+                            <input type="text" name="medicine_name"
+                                   class="form-control form-control-sm"
+                                   placeholder="e.g. Paracetamol" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small fw-semibold">Dosage</label>
+                            <input type="text" name="dosage"
+                                   class="form-control form-control-sm"
+                                   placeholder="e.g. 500mg twice daily" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small fw-semibold">Duration</label>
+                            <input type="text" name="duration"
+                                   class="form-control form-control-sm"
+                                   placeholder="e.g. 5 days" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small fw-semibold">Notes</label>
+                            <input type="text" name="notes"
+                                   class="form-control form-control-sm"
+                                   placeholder="Optional">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex gap-2 mt-4">
+        <button type="submit" class="btn btn-primary">
+            <i class="bi bi-check-circle me-2"></i>Save Prescriptions
+        </button>
+        <a href="{{ url_for('appointments.view_appointment',
+                           appointment_id=appointment.id) }}"
+           class="btn btn-outline-secondary">Cancel</a>
+    </div>
+</form>
+
+{% block extra_js %}
+<script>
+function addMedicine() {
+    const container = document.getElementById('medicine-list');
+    const row = document.createElement('div');
+    row.className = 'medicine-row border rounded p-3 mb-2';
+    row.innerHTML = `
+        <div class="row g-2">
+            <div class="col-md-3">
+                <label class="form-label small fw-semibold">Medicine</label>
+                <input type="text" name="medicine_name"
+                       class="form-control form-control-sm"
+                       placeholder="e.g. Paracetamol" required>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small fw-semibold">Dosage</label>
+                <input type="text" name="dosage"
+                       class="form-control form-control-sm"
+                       placeholder="e.g. 500mg twice daily" required>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small fw-semibold">Duration</label>
+                <input type="text" name="duration"
+                       class="form-control form-control-sm"
+                       placeholder="e.g. 5 days" required>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small fw-semibold">Notes</label>
+                <input type="text" name="notes"
+                       class="form-control form-control-sm"
+                       placeholder="Optional">
+            </div>
+        </div>
+        <button type="button" class="btn btn-sm btn-link text-danger mt-1 p-0"
+                onclick="this.parentElement.remove()">
+            <i class="bi bi-trash"></i> Remove
+        </button>`;
+    container.appendChild(row);
+}
+</script>
+{% endblock %}
+{% endblock %}

@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+{% block title %}Book Appointment - MedAnalytics{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h2 class="fw-bold mb-1">Book Appointment</h2>
+    <p class="text-muted">Schedule a new appointment</p>
+</div>
+
+<div class="card" style="max-width: 650px;">
+    <div class="card-body p-4">
+        <form method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Patient</label>
+                    <select name="patient_id" class="form-select" required>
+                        <option value="">Select Patient</option>
+                        {% for patient in patients %}
+                        <option value="{{ patient.id }}">
+                            {{ patient.name }} ({{ patient.contact }})
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Department</label>
+                    <select name="department_id" class="form-select" required
+                            id="department-select">
+                        <option value="">Select Department</option>
+                        {% for dept in departments %}
+                        <option value="{{ dept.id }}">{{ dept.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Doctor</label>
+                    <select name="doctor_id" class="form-select" required
+                            id="doctor-select">
+                        <option value="">Select Department First</option>
+                    </select>
+                    <small class="text-muted" id="fee-display"></small>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Scheduled Time</label>
+                    <input type="datetime-local" name="scheduled_time"
+                           class="form-control" required>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Priority</label>
+                    <select name="priority" class="form-select">
+                        <option value="normal">Normal</option>
+                        <option value="urgent">Urgent</option>
+                        <option value="emergency">Emergency</option>
+                    </select>
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label fw-semibold">Notes</label>
+                    <textarea name="notes" class="form-control" rows="2"
+                              placeholder="Optional notes"></textarea>
+                </div>
+            </div>
+
+            <div class="d-flex gap-2 mt-4">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-calendar-plus me-2"></i>Book Appointment
+                </button>
+                <a href="{{ url_for('appointments.list_appointments') }}"
+                   class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+document.getElementById('department-select').addEventListener('change', function() {
+    const deptId = this.value;
+    const doctorSelect = document.getElementById('doctor-select');
+    const feeDisplay = document.getElementById('fee-display');
+
+    doctorSelect.innerHTML = '<option value="">Loading...</option>';
+    feeDisplay.textContent = '';
+
+    if (!deptId) {
+        doctorSelect.innerHTML = '<option value="">Select Department First</option>';
+        return;
+    }
+
+    fetch(`/appointments/doctors-by-department/${deptId}`)
+        .then(response => response.json())
+        .then(doctors => {
+            if (doctors.length === 0) {
+                doctorSelect.innerHTML = '<option value="">No doctors in this department</option>';
+                return;
+            }
+            doctorSelect.innerHTML = '<option value="">Select Doctor</option>';
+            doctors.forEach(doc => {
+                const option = document.createElement('option');
+                option.value = doc.id;
+                option.textContent = `Dr. ${doc.name} (${doc.specialization})`;
+                option.dataset.fee = doc.consultation_fee;
+                doctorSelect.appendChild(option);
+            });
+        });
+});
+
+document.getElementById('doctor-select').addEventListener('change', function() {
+    const selected = this.options[this.selectedIndex];
+    const feeDisplay = document.getElementById('fee-display');
+    if (selected.dataset.fee) {
+        feeDisplay.textContent = `Consultation fee: ₹${selected.dataset.fee}`;
+    } else {
+        feeDisplay.textContent = '';
+    }
+});
+</script>
+{% endblock %}
+{% endblock %}

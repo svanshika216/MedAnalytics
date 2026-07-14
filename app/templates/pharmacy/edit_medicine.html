@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block title %}Edit Medicine - MedAnalytics{% endblock %}
+{% block page_title %}Edit Medicine{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h2>Edit Medicine</h2>
+        <p>Update {{ medicine.medicine_name }}</p>
+    </div>
+    <a href="{{ url_for('pharmacy.inventory') }}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-2"></i>Back
+    </a>
+</div>
+
+<div class="card" style="max-width: 500px;">
+    <div class="card-body p-4">
+        <form method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="row g-3">
+                <div class="col-12">
+                    <label class="form-label">Medicine Name</label>
+                    <input type="text" name="medicine_name" class="form-control"
+                           value="{{ medicine.medicine_name }}" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Quantity</label>
+                    <input type="number" name="quantity" class="form-control"
+                           min="0" value="{{ medicine.quantity }}" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Reorder Threshold</label>
+                    <input type="number" name="reorder_threshold" class="form-control"
+                           min="0" value="{{ medicine.reorder_threshold }}">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Unit Price (₹)</label>
+                    <input type="number" name="unit_price" class="form-control"
+                           min="0" step="0.01" value="{{ medicine.unit_price }}" required>
+                </div>
+            </div>
+            <div class="d-flex gap-2 mt-4">
+                <button type="submit" class="btn btn-primary px-4">
+                    <i class="bi bi-check-circle me-2"></i>Save Changes
+                </button>
+                <a href="{{ url_for('pharmacy.inventory') }}"
+                   class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

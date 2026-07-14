@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% block title %}Patient Profile - MedAnalytics{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-1">{{ patient.name }}</h2>
+        <p class="text-muted">Patient Profile</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{{ url_for('patients.edit_patient', patient_id=patient.id) }}"
+           class="btn btn-outline-primary">
+            <i class="bi bi-pencil me-2"></i>Edit
+        </a>
+        <a href="{{ url_for('patients.list_patients') }}"
+           class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-2"></i>Back
+        </a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body p-4 text-center">
+                <div class="bg-success rounded-circle d-inline-flex align-items-center
+                            justify-content-center mb-3"
+                     style="width:80px; height:80px;">
+                    <i class="bi bi-person fs-1 text-white"></i>
+                </div>
+                <h5 class="fw-bold">{{ patient.name }}</h5>
+                <p class="text-muted mb-1">{{ patient.gender }}</p>
+                {% if patient.blood_group %}
+                <span class="badge bg-danger">{{ patient.blood_group }}</span>
+                {% endif %}
+                <hr>
+                <div class="text-start">
+                    <p class="mb-1"><i class="bi bi-calendar me-2"></i>
+                        DOB: {{ patient.dob.strftime('%d %b %Y') }}</p>
+                    <p class="mb-1"><i class="bi bi-telephone me-2"></i>
+                        {{ patient.contact }}</p>
+                    {% if patient.address %}
+                    <p class="mb-0"><i class="bi bi-geo-alt me-2"></i>
+                        {{ patient.address }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+    <div class="card">
+        <div class="card-body p-4">
+            <h5 class="fw-bold mb-3">Medical History</h5>
+            {% if patient.appointments %}
+                {% for appt in patient.appointments
+                               | sort(attribute='scheduled_time', reverse=True) %}
+                <div class="border rounded p-3 mb-3">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <p class="fw-semibold mb-1">
+                                {{ appt.scheduled_time.strftime('%d %b %Y %I:%M %p') }}
+                            </p>
+                            <p class="text-muted small mb-1">
+                                Dr. {{ appt.doctor.name }} — {{ appt.doctor.department.name }}
+                            </p>
+                            {% if appt.notes %}
+                            <p class="small mb-1"><strong>Notes:</strong> {{ appt.notes }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="text-end">
+                            {% if appt.status == 'completed' %}
+                                <span class="badge bg-success">Completed</span>
+                            {% elif appt.status == 'scheduled' %}
+                                <span class="badge bg-primary">Scheduled</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Cancelled</span>
+                            {% endif %}
+                            <br>
+                            {% if appt.priority == 'emergency' %}
+                                <span class="badge bg-danger mt-1">Emergency</span>
+                            {% elif appt.priority == 'urgent' %}
+                                <span class="badge bg-warning text-dark mt-1">Urgent</span>
+                            {% else %}
+                                <span class="badge bg-light text-dark mt-1">Normal</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {% if appt.prescriptions %}
+                    <div class="mt-2">
+                        <p class="small fw-semibold text-muted mb-1">
+                            <i class="bi bi-capsule me-1"></i>Prescriptions
+                        </p>
+                        <table class="table table-sm table-bordered mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="small">Medicine</th>
+                                    <th class="small">Dosage</th>
+                                    <th class="small">Duration</th>
+                                    <th class="small">Notes</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for rx in appt.prescriptions %}
+                                <tr>
+                                    <td class="small fw-semibold">{{ rx.medicine_name }}</td>
+                                    <td class="small">{{ rx.dosage }}</td>
+                                    <td class="small">{{ rx.duration }}</td>
+                                    <td class="small text-muted">{{ rx.notes or '—' }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="small text-muted mt-2 mb-0">No prescriptions for this visit.</p>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            {% else %}
+            <p class="text-muted">No appointments yet.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
