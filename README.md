@@ -142,30 +142,30 @@ Key SQL patterns used in `app/routes/analytics.py`:
 - `CASE WHEN` inside aggregations for doctor completion rate
 - `TO_CHAR` for human-readable month formatting
 
+
 ---
 
 ## Project Structure
 
-medanalytics/
-├── app/
-│   ├── init.py          # App factory, extensions
-│   ├── models.py            # SQLAlchemy models (8 tables)
-│   ├── routes/
-│   │   ├── auth.py          # Login, logout, role_required decorator
-│   │   ├── admin.py         # Departments, doctors, users, dashboard
-│   │   ├── patients.py      # Patient CRUD
-│   │   ├── appointments.py  # Booking, prescriptions, status updates
-│   │   ├── pharmacy.py      # Inventory, billing
-│   │   └── analytics.py     # SQL analytics queries
-│   ├── scheduler/
-│   │   └── engine.py        # DSA scheduling engine
-│   ├── templates/           # Jinja2 templates
-│   └── static/css/          # Custom stylesheet
-├── config.py                # Environment-based configuration
-├── run.py                   # Application entry point
-├── seed.py                  # Database seeding script
-└── requirements.txt
-
+    medanalytics/
+    ├── app/
+    │   ├── __init__.py          # App factory, extensions
+    │   ├── models.py            # SQLAlchemy models (8 tables)
+    │   ├── routes/
+    │   │   ├── auth.py          # Login, logout, role_required decorator
+    │   │   ├── admin.py         # Departments, doctors, users, dashboard
+    │   │   ├── patients.py      # Patient CRUD
+    │   │   ├── appointments.py  # Booking, prescriptions, status updates
+    │   │   ├── pharmacy.py      # Inventory, billing
+    │   │   └── analytics.py     # SQL analytics queries
+    │   ├── scheduler/
+    │   │   └── engine.py        # DSA scheduling engine
+    │   ├── templates/           # Jinja2 templates
+    │   └── static/css/          # Custom stylesheet
+    ├── config.py                # Environment-based configuration
+    ├── run.py                   # Application entry point
+    ├── seed.py                  # Database seeding script
+    └── requirements.txt
 
 ---
 
