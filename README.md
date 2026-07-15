@@ -169,6 +169,54 @@ Key SQL patterns used in `app/routes/analytics.py`:
 
 ---
 
+# Screenshots
+
+## Login Page
+
+![Login Page](images/loginpage.png)
+
+---
+
+## Admin Dashboard
+
+![Admin Dashboard](images/Dashboard.png)
+
+---
+
+## User Management
+
+![User Management](images/Users.png)
+
+---
+
+## Add Patient
+
+![Add Patient](images/addpatient.png)
+
+---
+
+## Appointments
+
+![Appointments](images/appointments.png)
+
+---
+
+## Pharmacy Inventory
+
+![Pharmacy Inventory](images/PharmacyInventory.png)
+
+---
+
+## Analytics Dashboard
+
+![Analytics Dashboard](images/Analytics.png)
+
+---
+
+## Doctor Portal
+
+![Doctor Portal](images/DoctorView.png)
+
 ## Author
 
 Vanshika Sharma — B.Tech Electronics & Computer Engineering
